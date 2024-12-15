@@ -87,12 +87,31 @@ public class Program
 
     static void RunTests()
     {
-        Console.Clear();
-        Console.WriteLine("Running tests...");
-        tester.TestChainedHashTable();
-        tester.TestOpenAddressingHashTable();
-        Console.WriteLine("Tests complete. Press any key to continue...");
-        Console.ReadKey();
+        while (true)
+        {
+            Console.Clear();
+            int testOption = GetSelectedOption(new string[] { "Test Chained Hash Table", "Test Open Addressing Hash Table", "Back to Main Menu" });
+
+            switch (testOption)
+            {
+                case 0:
+                    Console.Clear();
+                    Console.WriteLine("Running Chained Hash Table test...");
+                    tester.TestChainedHashTable();
+                    Console.WriteLine("Test complete. Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+                case 1:
+                    Console.Clear();
+                    Console.WriteLine("Running Open Addressing Hash Table test...");
+                    tester.TestOpenAddressingHashTable();
+                    Console.WriteLine("Test complete. Press any key to continue...");
+                    Console.ReadKey();
+                    break;
+                case 2:
+                    return; 
+            }
+        }
     }
 
     static void AddElement()
