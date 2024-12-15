@@ -14,7 +14,7 @@ public class Program
         while (true)
         {
             Console.Clear();
-            int selectedOption = GetSelectedOption(new string[] { "Chained Hash Table", "Open Addressing Hash Table", "Exit" });
+            int selectedOption = GetSelectedOption(new string[] { "Chained Hash Table", "Open Addressing Hash Table", "Run Tests", "Exit" });
 
             switch (selectedOption)
             {
@@ -27,6 +27,9 @@ public class Program
                     HashTableMenu();
                     break;
                 case 2:
+                    RunTests();
+                    break;
+                case 3:
                     Environment.Exit(0);
                     break;
             }
@@ -51,7 +54,7 @@ public class Program
         while (true)
         {
             Console.Clear();
-            DisplayHashTableOperationsMenu();
+            //DisplayHashTableOperationsMenu();
             int selectedOption = GetSelectedOption(new string[] { "Add", "Get", "Remove", "Back to Main Menu" });
 
             switch (selectedOption)
@@ -80,6 +83,16 @@ public class Program
         Console.WriteLine("3. Remove element");
         Console.WriteLine("4. Back to Main Menu");
 
+    }
+
+    static void RunTests()
+    {
+        Console.Clear();
+        Console.WriteLine("Running tests...");
+        tester.TestChainedHashTable();
+        tester.TestOpenAddressingHashTable();
+        Console.WriteLine("Tests complete. Press any key to continue...");
+        Console.ReadKey();
     }
 
     static void AddElement()
