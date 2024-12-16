@@ -8,6 +8,13 @@ namespace Lab6HashTable
         // Размер таблицы задается извне
         public static int TableSize { get; set; } = 1009;
 
+        // Хеш-функция методом деления
+        public static int DivisionHashFunction(string key)
+        {
+            int intKey = key.Aggregate(0, (hash, ch) => hash + ch);
+            return Math.Abs(intKey % TableSize);
+        }
+
         // Хеш-функция методом умножения
         public static int MultiplicativeHashFunction(string key)
         {
@@ -15,6 +22,21 @@ namespace Lab6HashTable
             int intKey = key.Aggregate(0, (hash, ch) => hash + ch); // Преобразование строки в число (сумма символов)
             double fractionalPart = (intKey * A) % 1; // Дробная часть от умножения
             return (int)(TableSize * fractionalPart); // Хеш по методу умножения
+        }
+
+        // Adler-32 hash function
+        public static int Adler32HashFunction(string key)
+        {
+            unchecked
+            {
+                uint a = 1, b = 0;
+                foreach (char c in key)
+                {
+                    a = (a + c) % 65521;
+                    b = (b + a) % 65521;
+                }
+                return (int)((b << 16) | a) % TableSize; // Ensure within table size
+            }
         }
 
         // Базовая хеш-функция, использующая стандартный GetHashCode

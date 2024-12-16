@@ -54,6 +54,7 @@ public class Program
         while (true)
         {
             Console.Clear();
+            Console.WriteLine("Choose an operation:");
             //DisplayHashTableOperationsMenu();
             int selectedOption = GetSelectedOption(new string[] { "Add", "Get", "Remove", "Back to Main Menu" });
 

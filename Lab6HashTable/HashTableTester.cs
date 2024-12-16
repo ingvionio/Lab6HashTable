@@ -19,7 +19,9 @@ public class HashTableTester
                     HashFunctions.DefaultHashFunction,
                     HashFunctions.MultiplicativeHashFunction,
                     HashFunctions.PolynomialHashFunction,
-                    HashFunctions.FirstLastHashFunction
+                    HashFunctions.FirstLastHashFunction,
+                    HashFunctions.DivisionHashFunction,
+                    HashFunctions.Adler32HashFunction
                 }
             },
             // Хеш-функции для OpenAddressingHashTable
