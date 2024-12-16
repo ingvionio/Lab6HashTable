@@ -54,8 +54,6 @@ public class Program
         while (true)
         {
             Console.Clear();
-            Console.WriteLine("Choose an operation:");
-            //DisplayHashTableOperationsMenu();
             int selectedOption = GetSelectedOption(new string[] { "Add", "Get", "Remove", "Back to Main Menu" });
 
             switch (selectedOption)
@@ -73,17 +71,6 @@ public class Program
                     return; // Возврат в главное меню
             }
         }
-    }
-
-
-    static void DisplayHashTableOperationsMenu()
-    {
-        Console.WriteLine("Choose an operation:");
-        Console.WriteLine("1. Add element");
-        Console.WriteLine("2. Get element");
-        Console.WriteLine("3. Remove element");
-        Console.WriteLine("4. Back to Main Menu");
-
     }
 
     static void RunTests()
