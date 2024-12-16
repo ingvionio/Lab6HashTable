@@ -7,13 +7,16 @@ namespace Lab6HashTable
     public class OpenAddressingHashTable<K, V> : IHashTable<K, V>
     {
         private const double LoadFactor = 0.75;
+        private readonly Func<K, int> hashFunction;  // Added field
+
 
         private Entry[] table;
         private int count;
         private int capacity;
 
-        public OpenAddressingHashTable(int initialCapacity = 16)
+        public OpenAddressingHashTable(int initialCapacity, Func<K, int> hashFunction)
         {
+            this.hashFunction = hashFunction;
             capacity = initialCapacity;
             table = new Entry[capacity];
             count = 0;
@@ -21,7 +24,7 @@ namespace Lab6HashTable
 
         private int GetBucketIndex(K key, int probe)
         {
-            int hash = key.GetHashCode();
+            int hash = hashFunction(key); // Use provided hash function!
             return Math.Abs((hash + probe) % capacity);
         }
 

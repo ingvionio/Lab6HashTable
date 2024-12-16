@@ -103,7 +103,7 @@ public class HashTableTester
         {
             Console.WriteLine($"\nТестирование хеш-функции: {hashFunction.Method.Name}");
 
-            var hashTable = new OpenAddressingHashTable<string, string>(tableSize);
+            var hashTable = new OpenAddressingHashTable<string, string>(tableSize, hashFunction);
 
             // Вставляем пары в таблицу
             foreach (var pair in keyValuePairs)
@@ -115,7 +115,7 @@ public class HashTableTester
                 catch (InvalidOperationException e)
                 {
                     Console.WriteLine($"Ошибка: {e.Message} - Таблица переполнена.");
-                    break;
+                    break; // Прекращаем добавление элементов, если таблица переполнена
                 }
             }
 

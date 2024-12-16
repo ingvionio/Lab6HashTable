@@ -7,6 +7,32 @@ public class Program
     private static HashTableTester tester = new HashTableTester();
     private static IHashTable<string, string> currentHashTable;
 
+    private static Dictionary<Type, List<Func<string, int>>> hashFunctionsByTable = new Dictionary<Type, List<Func<string, int>>>
+        {
+            {
+                typeof(ChainedHashTable<string, string>),
+                new List<Func<string, int>>
+                {
+                    HashFunctions.DefaultHashFunction,
+                    HashFunctions.MultiplicativeHashFunction,
+                    HashFunctions.DivisionHashFunction,
+                    HashFunctions.Adler32HashFunction
+                }
+            },
+            {
+                typeof(OpenAddressingHashTable<string, string>),
+                new List<Func<string, int>> // Add more functions here later
+                {
+                    HashFunctions.DefaultHashFunction,
+                    HashFunctions.MultiplicativeHashFunction,
+                    HashFunctions.LengthBasedHashFunction,
+                    HashFunctions.PolynomialHashFunction,
+                    HashFunctions.FirstLastHashFunction
+                }
+            }
+        };
+
+
     public static void Main(string[] args)
     {
         Console.CursorVisible = false;
@@ -38,15 +64,25 @@ public class Program
 
     static IHashTable<string, string> CreateChainedHashTable()
     {
-        // Здесь можно добавить выбор хеш-функции для ChainedHashTable
-        Console.WriteLine("Creating Chained Hash Table... (Default hash function used)");
-        return new ChainedHashTable<string, string>(1000, HashFunctions.DefaultHashFunction); // Используем DefaultHashFunction для примера
+        Console.Clear();
+        int hashFunctionIndex = GetSelectedOption(hashFunctionsByTable[typeof(ChainedHashTable<string, string>)].Select(f => f.Method.Name).ToArray());
+        var selectedHashFunction = hashFunctionsByTable[typeof(ChainedHashTable<string, string>)][hashFunctionIndex];
+
+        Console.WriteLine($"Creating Chained Hash Table with {selectedHashFunction.Method.Name}...");
+        return new ChainedHashTable<string, string>(1000, selectedHashFunction);
     }
+
 
     static IHashTable<string, string> CreateOpenAddressingHashTable()
     {
-        Console.WriteLine("Creating Open Addressing Hash Table...");
-        return new OpenAddressingHashTable<string, string>(10000);
+        Console.Clear();
+        int hashFunctionIndex = GetSelectedOption(hashFunctionsByTable[typeof(OpenAddressingHashTable<string, string>)].Select(f => f.Method.Name).ToArray());
+        var selectedHashFunction = hashFunctionsByTable[typeof(OpenAddressingHashTable<string, string>)][hashFunctionIndex];
+
+
+        Console.WriteLine($"Creating Open Addressing Hash Table with {selectedHashFunction.Method.Name}...");
+        return new OpenAddressingHashTable<string, string>(10000, selectedHashFunction); // Pass selected hash function
+
     }
 
     static void HashTableMenu()
