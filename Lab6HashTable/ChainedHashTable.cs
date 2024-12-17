@@ -18,7 +18,7 @@ namespace Lab6HashTable
         private int GetBucketIndex(K key)
         {
             int hash = hashFunction(key);
-            return Math.Abs(hash % buckets.Length);
+            return hash;
         }
 
         public void Add(K key, V value)

@@ -73,5 +73,16 @@ namespace Lab6HashTable
             int last = key[key.Length - 1];
             return Math.Abs((first * 31 + last) % TableSize);
         }
+
+        public static int QuadraticProbing(int baseHash, int attempt, int tableSize)
+        {
+            const int c1 = 1; // Константа для линейного компонента
+            const int c2 = 3; // Константа для квадратичного компонента
+
+            int index = (baseHash + c1 * attempt + c2 * attempt * attempt) % tableSize;
+            return index >= 0 ? index : index + tableSize; // Гарантируем неотрицательный индекс
+        }
+
+
     }
 }

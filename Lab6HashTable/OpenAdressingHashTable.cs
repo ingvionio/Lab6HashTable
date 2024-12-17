@@ -7,26 +7,27 @@ namespace Lab6HashTable
     public class OpenAddressingHashTable<K, V> : IHashTable<K, V>
     {
         private const double LoadFactor = 0.75;
-        private readonly Func<K, int> hashFunction;  // Added field
+        private readonly Func<K, int> hashFunction;
+    private readonly Func<int, int, int, int> probingFunction; // Стратегия пробирования
 
+    private Entry[] table;
+    private int count;
+    private int capacity;
 
-        private Entry[] table;
-        private int count;
-        private int capacity;
+    public OpenAddressingHashTable(int initialCapacity, Func<K, int> hashFunction, Func<int, int, int, int> probingFunction)
+    {
+        this.hashFunction = hashFunction;
+        this.probingFunction = probingFunction;
+        capacity = initialCapacity;
+        table = new Entry[capacity];
+        count = 0;
+    }
 
-        public OpenAddressingHashTable(int initialCapacity, Func<K, int> hashFunction)
-        {
-            this.hashFunction = hashFunction;
-            capacity = initialCapacity;
-            table = new Entry[capacity];
-            count = 0;
-        }
-
-        private int GetBucketIndex(K key, int probe)
-        {
-            int hash = hashFunction(key); // Use provided hash function!
-            return Math.Abs((hash + probe) % capacity);
-        }
+    private int GetBucketIndex(K key, int probe)
+    {
+        int baseHash = hashFunction(key);
+        return probingFunction(baseHash, probe, capacity); // Используем стратегию пробирования
+    }
 
         public void Add(K key, V value)
         {
@@ -111,6 +112,38 @@ namespace Lab6HashTable
         {
             return table.Select(bucket => bucket != null && !bucket.IsDeleted ? 1 : 0).ToList();
         }
+
+        public List<int> GetClusterLengths()
+        {
+            var clusters = new List<int>();
+            int currentCluster = 0;
+
+            foreach (var bucket in table)
+            {
+                if (bucket != null && !bucket.IsDeleted)
+                {
+                    currentCluster++;
+                }
+                else
+                {
+                    if (currentCluster > 0)
+                    {
+                        clusters.Add(currentCluster);
+                        currentCluster = 0;
+                    }
+                }
+            }
+
+            // Добавляем последний кластер, если он не был добавлен
+            if (currentCluster > 0)
+            {
+                clusters.Add(currentCluster);
+            }
+
+            return clusters;
+        }
+
+
 
         private void Resize()
         {

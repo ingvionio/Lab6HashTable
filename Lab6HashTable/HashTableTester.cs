@@ -7,37 +7,7 @@ public class HashTableTester
 {
     private readonly Dictionary<Type, List<Func<string, int>>> hashFunctionsByTable;
 
-    public HashTableTester()
-    {
-        hashFunctionsByTable = new Dictionary<Type, List<Func<string, int>>>
-        {
-            // Хеш-функции для ChainedHashTable
-            {
-                typeof(ChainedHashTable<string, string>),
-                new List<Func<string, int>>
-                {
-                    HashFunctions.DefaultHashFunction,
-                    HashFunctions.MultiplicativeHashFunction,
-                    HashFunctions.PolynomialHashFunction,
-                    HashFunctions.FirstLastHashFunction,
-                    HashFunctions.DivisionHashFunction,
-                    HashFunctions.Adler32HashFunction
-                }
-            },
-            // Хеш-функции для OpenAddressingHashTable
-            {
-                typeof(OpenAddressingHashTable<string, string>),
-                new List<Func<string, int>>
-                {
-                    HashFunctions.DefaultHashFunction,
-                    HashFunctions.MultiplicativeHashFunction,
-                    HashFunctions.LengthBasedHashFunction,
-                    HashFunctions.PolynomialHashFunction,
-                    HashFunctions.FirstLastHashFunction
-                }
-            }
-        };
-    }
+
 
     public void TestChainedHashTable()
     {
@@ -93,65 +63,66 @@ public class HashTableTester
         const int elementCount = 10000;
         const int tableSize = 10000;
 
-        // Генерация пар "ключ-значение"
+        var probingStrategies = new Dictionary<string, Func<int, int, int, int>>
+    {
+        { "QuadraticProbing", HashFunctions.QuadraticProbing }
+    };
+
+        var results = new List<(string HashFunction, string ProbingStrategy, int MaxCluster)>();
         var keyValuePairs = GenerateKeyValuePairs(elementCount);
-        var results = new List<(string FunctionName, int MaxCluster)>();
 
         Console.WriteLine("=== Тестирование OpenAddressingHashTable ===");
 
         foreach (var hashFunction in hashFunctionsByTable[typeof(OpenAddressingHashTable<string, string>)])
         {
-            Console.WriteLine($"\nТестирование хеш-функции: {hashFunction.Method.Name}");
-
-            var hashTable = new OpenAddressingHashTable<string, string>(tableSize, hashFunction);
-
-            // Вставляем пары в таблицу
-            foreach (var pair in keyValuePairs)
+            foreach (var probingStrategy in probingStrategies)
             {
-                try
+                Console.WriteLine($"\nХеш-функция: {hashFunction.Method.Name}, Стратегия пробирования: {probingStrategy.Key}");
+
+                var hashTable = new OpenAddressingHashTable<string, string>(
+                    tableSize,
+                    hashFunction,
+                    probingStrategy.Value
+                );
+
+                foreach (var pair in keyValuePairs)
                 {
-                    hashTable.Add(pair.Key, pair.Value);
+                    try
+                    {
+                        hashTable.Add(pair.Key, pair.Value);
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        Console.WriteLine($"Ошибка: {e.Message} - Таблица переполнена.");
+                        break;
+                    }
                 }
-                catch (InvalidOperationException e)
-                {
-                    Console.WriteLine($"Ошибка: {e.Message} - Таблица переполнена.");
-                    break; // Прекращаем добавление элементов, если таблица переполнена
-                }
+
+                var clusterLengths = hashTable.GetClusterLengths();
+                int maxClusterLength = CalculateMaxCluster(clusterLengths);
+                results.Add((hashFunction.Method.Name, probingStrategy.Key, maxClusterLength));
+
+                Console.WriteLine($"Самый длинный кластер: {maxClusterLength}");
             }
-
-            var chainLengths = hashTable.GetChainLengths();
-            int maxClusterLength = CalculateMaxCluster(chainLengths);
-            results.Add((hashFunction.Method.Name, maxClusterLength));
-
-            Console.WriteLine($"Самый длинный кластер: {maxClusterLength}");
         }
 
-        var bestFunction = results.OrderBy(r => r.MaxCluster).First();
-        Console.WriteLine($"\nЛучшая хеш-функция: {bestFunction.FunctionName}");
-        Console.WriteLine($"Обоснование: минимальная длина самого длинного кластера ({bestFunction.MaxCluster}).");
+        var bestResult = results.OrderBy(r => r.MaxCluster).First();
+        Console.WriteLine($"\nЛучшая комбинация:");
+        Console.WriteLine($"Хеш-функция: {bestResult.HashFunction}");
+        Console.WriteLine($"Стратегия пробирования: {bestResult.ProbingStrategy}");
+        Console.WriteLine($"Самый длинный кластер: {bestResult.MaxCluster}");
     }
 
 
-    private int CalculateMaxCluster(List<int> chainLengths)
+
+
+
+    private int CalculateMaxCluster(List<int> clusterLengths)
     {
-        int maxCluster = 0;
-        int currentCluster = 0;
-
-        foreach (var length in chainLengths)
-        {
-            if (length > 0)
-            {
-                currentCluster++;
-                maxCluster = Math.Max(maxCluster, currentCluster);
-            }
-            else
-            {
-                currentCluster = 0;
-            }
-        }
-
-        return maxCluster;
+        return clusterLengths.Max(); // Просто находим максимальный кластер
     }
+
+
 
     private List<KeyValuePair<string, string>> GenerateKeyValuePairs(int count)
     {
