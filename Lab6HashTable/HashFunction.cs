@@ -6,7 +6,7 @@ namespace Lab6HashTable
     public static class HashFunctions
     {
         // Размер таблицы задается извне
-        public static int TableSize { get; set; } = 1009;
+        public static int TableSize { get; set; }
 
         // Хеш-функция методом деления
         public static int DivisionHashFunction(string key)
@@ -83,6 +83,21 @@ namespace Lab6HashTable
             return index >= 0 ? index : index + tableSize; // Гарантируем неотрицательный индекс
         }
 
+        public static int LinearProbing(int baseHash, int attempt, int tableSize)
+        {
+            // Линейное пробирование: просто добавляем номер попытки (i) к базовому хешу
+            int index = (baseHash + attempt) % tableSize;
+
+            // Гарантируем неотрицательный индекс
+            return index >= 0 ? index : index + tableSize;
+        }
+
+        public static int DoubleHashing(int baseHash, int attempt, int tableSize)
+        {
+            int step = 1 + (baseHash % (tableSize - 1));
+            int index = (baseHash + attempt * step) % tableSize;
+            return index >= 0 ? index : index + tableSize;
+        }
 
     }
 }

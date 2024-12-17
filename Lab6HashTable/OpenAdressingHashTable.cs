@@ -6,28 +6,28 @@ namespace Lab6HashTable
 {
     public class OpenAddressingHashTable<K, V> : IHashTable<K, V>
     {
-        private const double LoadFactor = 0.75;
+        private const double LoadFactor = 0.7;
         private readonly Func<K, int> hashFunction;
-    private readonly Func<int, int, int, int> probingFunction; // Стратегия пробирования
+        private readonly Func<int, int, int, int> probingFunction; // Стратегия пробирования
 
-    private Entry[] table;
-    private int count;
-    private int capacity;
+        private Entry[] table;
+        private int count;
+        private int capacity;
 
-    public OpenAddressingHashTable(int initialCapacity, Func<K, int> hashFunction, Func<int, int, int, int> probingFunction)
-    {
-        this.hashFunction = hashFunction;
-        this.probingFunction = probingFunction;
-        capacity = initialCapacity;
-        table = new Entry[capacity];
-        count = 0;
-    }
+        public OpenAddressingHashTable(int initialCapacity, Func<K, int> hashFunction, Func<int, int, int, int> probingFunction)
+        {
+            this.hashFunction = hashFunction;
+            this.probingFunction = probingFunction;
+            capacity = initialCapacity;
+            table = new Entry[capacity];
+            count = 0;
+        }
 
-    private int GetBucketIndex(K key, int probe)
-    {
-        int baseHash = hashFunction(key);
-        return probingFunction(baseHash, probe, capacity); // Используем стратегию пробирования
-    }
+        private int GetBucketIndex(K key, int probe)
+        {
+            int baseHash = hashFunction(key);
+            return probingFunction(baseHash, probe, capacity); // Используем стратегию пробирования
+        }
 
         public void Add(K key, V value)
         {

@@ -7,12 +7,40 @@ public class HashTableTester
 {
     private readonly Dictionary<Type, List<Func<string, int>>> hashFunctionsByTable;
 
+    public HashTableTester()
+    {
+        hashFunctionsByTable = new Dictionary<Type, List<Func<string, int>>>
+    {
+        {
+            typeof(ChainedHashTable<string, string>),
+            new List<Func<string, int>>
+            {
+                HashFunctions.DefaultHashFunction,
+                HashFunctions.MultiplicativeHashFunction,
+                HashFunctions.DivisionHashFunction,
+                HashFunctions.Adler32HashFunction
+            }
+        },
+        {
+            typeof(OpenAddressingHashTable<string, string>),
+            new List<Func<string, int>>
+            {
+                HashFunctions.DefaultHashFunction,
+                HashFunctions.MultiplicativeHashFunction,
+                HashFunctions.LengthBasedHashFunction,
+                HashFunctions.PolynomialHashFunction,
+                HashFunctions.FirstLastHashFunction
+            }
+        }
+    };
+    }
 
 
     public void TestChainedHashTable()
     {
         const int elementCount = 100000;
         const int tableSize = 1000;
+        HashFunctions.TableSize = 1000;
 
         // Генерация пар "ключ-значение"
         var keyValuePairs = GenerateKeyValuePairs(elementCount);
@@ -62,11 +90,15 @@ public class HashTableTester
     {
         const int elementCount = 10000;
         const int tableSize = 10000;
+        HashFunctions.TableSize = 10000;
 
         var probingStrategies = new Dictionary<string, Func<int, int, int, int>>
-    {
-        { "QuadraticProbing", HashFunctions.QuadraticProbing }
-    };
+        {
+            { "LinearProbing", HashFunctions.LinearProbing },
+            { "QuadraticProbing", HashFunctions.QuadraticProbing },
+            { "DoubleHashing", HashFunctions.DoubleHashing }
+        };
+
 
         var results = new List<(string HashFunction, string ProbingStrategy, int MaxCluster)>();
         var keyValuePairs = GenerateKeyValuePairs(elementCount);
@@ -112,6 +144,7 @@ public class HashTableTester
         Console.WriteLine($"Стратегия пробирования: {bestResult.ProbingStrategy}");
         Console.WriteLine($"Самый длинный кластер: {bestResult.MaxCluster}");
     }
+
 
 
 

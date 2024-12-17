@@ -23,10 +23,9 @@ public class Program
             typeof(OpenAddressingHashTable<string, string>),
             new List<Func<string, int>>
             {
-                HashFunctions.DefaultHashFunction,
+                //HashFunctions.DefaultHashFunction,
                 HashFunctions.MultiplicativeHashFunction,
                 HashFunctions.PolynomialHashFunction,
-                HashFunctions.FirstLastHashFunction
             }
         }
     };
@@ -116,41 +115,35 @@ public class Program
 
     static void RunTests()
     {
-        Console.Clear();
-        Console.WriteLine("=== Testing Open Addressing Hash Table with Probing Strategies ===");
-
-        foreach (var hashFunction in hashFunctionsByTable[typeof(OpenAddressingHashTable<string, string>)])
+        while (true)
         {
-            foreach (var probingStrategy in probingStrategies)
+            Console.Clear();
+            int testOption = GetSelectedOption(new string[] { "Test Chained Hash Table", "Test Open Addressing Hash Table", "Back to Main Menu" });
+
+            switch (testOption)
             {
-                Console.WriteLine($"\nHash Function: {hashFunction.Method.Name}, Probing Strategy: {probingStrategy.Key}");
+                case 0:
+                    Console.Clear();
+                    Console.WriteLine("Running Chained Hash Table test...");
+                    tester.TestChainedHashTable();
+                    Console.WriteLine("Test complete. Press any key to continue...");
+                    Console.ReadKey();
+                    break;
 
-                var hashTable = new OpenAddressingHashTable<string, string>(10000, hashFunction, probingStrategy.Value);
+                case 1:
+                    Console.Clear();
+                    Console.WriteLine("Running Open Addressing Hash Table test...");
+                    tester.TestOpenAddressingHashTable();
+                    Console.WriteLine("Test complete. Press any key to continue...");
+                    Console.ReadKey();
+                    break;
 
-                var keyValuePairs = GenerateKeyValuePairs(10000);
-                foreach (var pair in keyValuePairs)
-                {
-                    try
-                    {
-                        hashTable.Add(pair.Key, pair.Value);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        Console.WriteLine("Table overflow occurred.");
-                        break;
-                    }
-                }
-
-                var clusterLengths = hashTable.GetClusterLengths();
-                int maxClusterLength = clusterLengths.Max();
-
-                Console.WriteLine($"Maximum Cluster Length: {maxClusterLength}");
+                case 2:
+                    return; // Вернуться в главное меню
             }
         }
-
-        Console.WriteLine("\nTesting complete. Press any key to return...");
-        Console.ReadKey();
     }
+
 
     static void AddElement()
     {
