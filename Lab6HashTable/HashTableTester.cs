@@ -18,7 +18,9 @@ public class HashTableTester
                 HashFunctions.DefaultHashFunction,
                 HashFunctions.MultiplicativeHashFunction,
                 HashFunctions.DivisionHashFunction,
-                HashFunctions.Adler32HashFunction
+                HashFunctions.Adler32HashFunction,
+                HashFunctions.XorHashFunction,
+                HashFunctions.ShiftXorMultiplyHashFunction
             }
         },
         {
@@ -27,9 +29,10 @@ public class HashTableTester
             {
                 HashFunctions.DefaultHashFunction,
                 HashFunctions.MultiplicativeHashFunction,
-                HashFunctions.LengthBasedHashFunction,
-                HashFunctions.PolynomialHashFunction,
-                HashFunctions.FirstLastHashFunction
+                //HashFunctions.DivisionHashFunction,
+                HashFunctions.Adler32HashFunction,
+                HashFunctions.XorHashFunction,
+                HashFunctions.ShiftXorMultiplyHashFunction
             }
         }
     };
@@ -96,8 +99,11 @@ public class HashTableTester
         {
             { "LinearProbing", HashFunctions.LinearProbing },
             { "QuadraticProbing", HashFunctions.QuadraticProbing },
-            { "DoubleHashing", HashFunctions.DoubleHashing }
+            { "DoubleHashing", HashFunctions.DoubleHashing },
+            { "ExponentialProbing", HashFunctions.ExponentialProbing },
+            { "CubicProbing", HashFunctions.CubicProbing}
         };
+
 
 
         var results = new List<(string HashFunction, string ProbingStrategy, int MaxCluster)>();
